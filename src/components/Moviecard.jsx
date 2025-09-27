@@ -4,10 +4,11 @@ import Spinner from './Spinner';
 const API_KEY = '5f7f317b6f88b060ddd490280037b2de' ; // make sure this is a v3 key
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 
-const Moviecard = ({ movie }) => {
+const Moviecard = ({ movie, onMovieClick }) => {
   const [loadingTrailer, setLoadingTrailer] = useState(false);
 
   const handleClick = async () => {
+    if (onMovieClick) onMovieClick(movie);  // ✅ increment search count
     setLoadingTrailer(true);
     try {
       const response = await fetch(

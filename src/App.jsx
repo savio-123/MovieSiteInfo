@@ -2,8 +2,9 @@ import Search from "./components/Search"
 import { useState, useEffect } from "react"
 import Spinner from "./components/Spinner"
 import Moviecard from "./components/Moviecard"
+import TrendingMovie from "./components/TrendingMovie"
 import { useDebounce } from "react-use"
-import { getTrending, updateSearchCount } from "./appwrite"
+import { updateSearchCount } from "./appwrite"
 
 // import new function
 
@@ -24,9 +25,6 @@ const App = () => {
   const [movies,setMovies] = useState([]);
   const [loading,setLoading] = useState(false);
   const [isDebounced,setIsDebounced] = useState(false);// NEW
-  const [trending,setTrending] = useState([]);
-  const [loadingTrending,setLoadingTrending] = useState(false);
-  const [trendingErrorMessage,setTrendingErrorMessage] = useState('');
 
   useDebounce(() => setIsDebounced(searchTerm),1000,[searchTerm]);
 
@@ -50,11 +48,7 @@ const App = () => {
         return;
       }
 
-      setMovies(data.results || []);
-
-      if(query && data.results.length > 0){
-        await updateSearchCount(query, data.results[0]);
-      }
+      setMovies(data.results || 'No movies found');
 
     } catch(error) {
       console.error('Error fetching movies:', error);
@@ -63,28 +57,10 @@ const App = () => {
       setLoading(false);
     }
   };
-  const fetchTrendingMovies = async () => {
-    setLoadingTrending(true);
-    setTrendingErrorMessage('');
-    try{
-         const movies = await getTrending();
-         setTrending(movies);
-    }
-    catch(error){
-      console.error('Error fetching trending movies:', error);
-      setTrendingErrorMessage('Error fetching trending movies');
-    }
-    finally{
-      setLoadingTrending(false);
-    }
-  }
+ 
   useEffect(() => {    
     fetchMovies(isDebounced);
   },[isDebounced]);
-
-  useEffect(() => {
-    fetchTrendingMovies();
-  },[]);
 
   return (
    <main>
@@ -92,64 +68,40 @@ const App = () => {
       <div className="wrapper">
         <header>
           <img src="hero.png" alt="movies Banner" />
-          <h1>
-            Find The Latest <span className="text-gradient"> Movies </span> 
-            And Let The Weekend Begin
-          </h1>
+          <h1 className="text-white text-3xl sm:text-5xl md:text-6xl font-bold text-center">
+  Find The Latest <span className="text-gradient"> Movies </span>
+  <span className="block mt-2">And Let The Weekend Begin</span>
+</h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
-        {trending.length > 0 && (
-          <section className="trending">
-            <h2 className="pl-2 text-white mt-5 mb-8 text-2xl font-dm-sans font-bold">Trending Now</h2>
-            {
-              loadingTrending && (
-                <Spinner />
-              )
-            }
-            <ul>
-              {trending.map((movie, index) => (
-                <li key={movie.$id}>
-                  <p>{index + 1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
-                </li>
-              ))}
-            </ul>
-            {
-              trendingErrorMessage && (
-                <p className="text-red-500 text-center font-dm-sans font-bold">
-                  {trendingErrorMessage}
-                </p>
-              )
-            }
-          </section>
-        )}
-       
+        <TrendingMovie />
+        <section className="all-movies">
+  <h2 className="pl-2 text-white mt-10 text-2xl font-dm-sans font-bold">🎬Movie List</h2>
 
-        <section className="all-movies"> 
-          <h2 className="pl-2 text-white mt-10 text-2xl font-dm-sans font-bold">🎬Movie List</h2>
+  {loading ? (
+    <Spinner />
+  ) : errorMessage ? (
+    <p className="text-red-500 text-center font-dm-sans font-bold">
+      {errorMessage}
+    </p>
+  ) : movies.length === 0 ? (
+    <p className="text-white text-center font-dm-sans font-bold">
+      No movies found
+    </p>
+  ) : (
+    <ul>
+      {movies.map((movie) => (
+        <Moviecard
+          key={movie.id}
+          movie={movie}
+          onMovieClick={() => updateSearchCount(movie)}
+        />
+      ))}
+    </ul>
+  )}
+</section>
 
-          { loading ? (
-            <Spinner />
-          ):( 
-            <ul>
-  {movies.map((movie) => (
-    <Moviecard 
-      key={movie.id} 
-      movie={movie} 
-      onMovieClick={updateSearchCount}  // pass handler
-    />
-  ))}
-</ul>
-          )}
-
-          {
-            errorMessage && (
-            <p className="text-red-500 text-center font-dm-sans font-bold">
-              {errorMessage}
-            </p>
-          )}
-        </section>
       </div>
    </main>
   )
