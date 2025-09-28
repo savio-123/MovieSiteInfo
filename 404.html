@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; URL=./index.html">
-    <title>Redirecting...</title>
-  </head>
-  <body></body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script type="text/javascript">
+    // GitHub Pages React 404 redirect
+    (function() {
+      var repo = "/MovieSiteInfo/"; // ← Replace with your repo name
+      var index = repo + "index.html";
+      var search = window.location.search || "";
+      var hash = window.location.hash || "";
+      // Redirect to index.html, preserving search and hash
+      window.location.replace(index + search + hash);
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting to <a href="/MovieSiteInfo/index.html">home page</a>...</p>
+</body>
 </html>
