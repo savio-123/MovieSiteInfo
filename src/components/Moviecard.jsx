@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Spinner from './Spinner';
+import starIcon from "../assets/star.svg";
 
 const API_KEY = '5f7f317b6f88b060ddd490280037b2de' ; // make sure this is a v3 key
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -50,7 +51,7 @@ const Moviecard = ({ movie, onMovieClick }) => {
         <h3 className="text-white">{movie.title}</h3>
         <div className="content">
           <div className="rating">
-            <img src="star.svg" alt="star" />
+            <img src={starIcon} alt="star" />
             <p>{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</p>
           </div>
           <span>•</span>
